@@ -1,7 +1,3 @@
-Okay, this looks like a solid WPF project for library management. Let's break it down into a more structured and comprehensive description, suitable for a portfolio or README.
-
----
-
 ## Projet Gestion Bibliothèque WPF (WPF Library Management Project)
 
 **Créé Par / Created By:** ID LAHCEN El Mahdi & KHALIL El Houssine
