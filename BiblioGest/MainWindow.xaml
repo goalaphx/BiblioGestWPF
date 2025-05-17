@@ -1,0 +1,83 @@
+﻿<Window x:Class="BiblioGest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BiblioGest"
+        xmlns:views="clr-namespace:BiblioGest.Views"             
+        xmlns:viewmodels="clr-namespace:BiblioGest.ViewModels"   
+        xmlns:converters="clr-namespace:BiblioGest.Converters" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        mc:Ignorable="d"
+        Title="BiblioGest - Gestion de Bibliothèque" Height="720" Width="1100"
+        WindowStartupLocation="CenterScreen" MinHeight="500" MinWidth="800">
+    <!-- DataContext is set via Dependency Injection in App.xaml.cs -->
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Column for the collapsible side menu -->
+            <ColumnDefinition Width="Auto" MinWidth="200"/>
+            <!-- Column for the main content -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ==== SIDE NAVIGATION MENU ==== -->
+        <Border Grid.Column="0" Background="#FF303030" BorderBrush="#FF444444" BorderThickness="0,0,1,0">
+            <!-- Darker theme example -->
+            <StackPanel Margin="5">
+                <TextBlock Text="BiblioGest" Foreground="WhiteSmoke" FontSize="24" FontWeight="SemiBold" Margin="15,20,15,15" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Separator Background="#FF555555" Margin="10,0,10,15"/>
+
+                <!-- Navigation Buttons (Example using basic style) -->
+                <!-- Consider using Styles (e.g., based on Button) for consistent appearance -->
+                <!-- In MainWindow.xaml, inside the side menu StackPanel -->
+                <Button Content="Tableau de Bord" Margin="10,5" Padding="12,8" Foreground="WhiteSmoke" Background="#FF404040" BorderThickness="0" HorizontalContentAlignment="Left" ToolTip="Afficher le tableau de bord"
+                        Command="{Binding NavigateToDashboardCommand}" IsEnabled="True"/> <!-- Changed IsEnabled -->
+
+                <Button Content="Gestion Livres" Margin="10,5" Padding="12,8" Foreground="WhiteSmoke" Background="#FF404040" BorderThickness="0" HorizontalContentAlignment="Left" ToolTip="Gérer la collection de livres"
+                        Command="{Binding NavigateToBooksCommand}"/>
+
+                <Button Content="Gestion Adhérents" Margin="10,5" Padding="12,8" Foreground="WhiteSmoke" Background="#FF404040" BorderThickness="0" HorizontalContentAlignment="Left" ToolTip="Gérer les membres de la bibliothèque"
+                        Command="{Binding NavigateToMembersCommand}"/>
+
+                <!-- In MainWindow.xaml, inside the side menu StackPanel -->
+                <Button Content="Gestion Emprunts" Margin="10,5" Padding="12,8" Foreground="WhiteSmoke" Background="#FF404040" BorderThickness="0" HorizontalContentAlignment="Left" ToolTip="Gérer les prêts et retours"
+                        Command="{Binding NavigateToLoansCommand}"/>
+                
+                <Button Content="Gestion Catégories" Margin="10,5" Padding="12,8" Foreground="WhiteSmoke" Background="#FF404040" BorderThickness="0" HorizontalContentAlignment="Left" ToolTip="Gérer les catégories de livres"
+                        Command="{Binding NavigateToCategoriesCommand}"/>
+
+                
+
+                <!-- Add more buttons as needed -->
+
+            </StackPanel>
+        </Border>
+
+        <!-- ==== MAIN CONTENT AREA ==== -->
+        <Border Grid.Column="1" Padding="20" Background="#FFEFEFEF">
+            <!-- This ContentControl dynamically displays the View (UserControl)
+                 that corresponds to the 'CurrentViewModel' property in MainViewModel,
+                 based on the DataTemplates defined in App.xaml -->
+            <ContentControl Content="{Binding CurrentViewModel}"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Border>
+
+        <!-- ==== GLOBAL BUSY INDICATOR OVERLAY ==== -->
+        <!-- Shows a loading indicator when CurrentViewModel.IsBusy is true -->
+        <Grid Grid.ColumnSpan="2" Background="#7F000000" Panel.ZIndex="100"
+              Visibility="{Binding CurrentViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Border Background="#CC000000" CornerRadius="10" Padding="35"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="180">
+                <StackPanel Orientation="Vertical">
+                    <!-- Use DynamicResource if using a UI library style (like Material Design) -->
+                    <!-- Otherwise, use a standard ProgressBar or a custom loading animation -->
+                    <ProgressBar IsIndeterminate="True" Width="50" Height="50" Style="{DynamicResource MaterialDesignCircularProgressBar}" Foreground="White" HorizontalAlignment="Center"/>
+                    <!-- Fallback basic ProgressBar if MaterialDesign isn't used: -->
+                    <!-- <ProgressBar IsIndeterminate="True" Width="150" Height="15" HorizontalAlignment="Center"/> -->
+                    <TextBlock Text="Chargement en cours..." VerticalAlignment="Center" Margin="0,20,0,0" Foreground="WhiteSmoke" FontSize="14" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Window>

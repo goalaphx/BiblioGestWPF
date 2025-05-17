@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="BiblioGest.Views.LoanNewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BiblioGest.Views"
+             xmlns:viewmodels="clr-namespace:BiblioGest.ViewModels"
+             xmlns:converters="clr-namespace:BiblioGest.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:LoanNewViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="400" d:DesignWidth="500" Background="WhiteSmoke">
+
+    <UserControl.Resources>
+        <!-- Ensure BooleanToVisibilityConverter is defined in App.xaml or here -->
+        <!-- <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> -->
+        <Style TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,5"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <StackPanel>
+                            <AdornedElementPlaceholder x:Name="controlPlaceholder"/>
+                            <ItemsControl ItemsSource="{Binding ElementName=controlPlaceholder, Path=AdornedElement.(Validation.Errors)}" Foreground="Red" FontSize="10" Margin="0,1,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ErrorContent}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>    <!-- Title -->
+            <RowDefinition Height="*"/>       <!-- Form -->
+            <RowDefinition Height="Auto"/>    <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding WindowTitle}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,15" HorizontalAlignment="Center"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" MinWidth="120"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Adherent -->
+                    <RowDefinition Height="Auto"/> <!-- Livre -->
+                    <RowDefinition Height="Auto"/> <!-- Date Emprunt -->
+                    <RowDefinition Height="Auto"/> <!-- Date Retour Prévu -->
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Adhérent:" Target="{Binding ElementName=cmbAdherent}"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="cmbAdherent"
+                          ItemsSource="{Binding Adherents}"
+                          SelectedItem="{Binding SelectedAdherent, ValidatesOnNotifyDataErrors=True}"
+                          DisplayMemberPath="NomComplet"
+                          ToolTip="Sélectionner l'adhérent emprunteur"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Livre:" Target="{Binding ElementName=cmbLivre}"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cmbLivre"
+                          ItemsSource="{Binding AvailableLivres}"
+                          SelectedItem="{Binding SelectedLivre, ValidatesOnNotifyDataErrors=True}"
+                          DisplayMemberPath="Titre"
+                          ToolTip="Sélectionner le livre à emprunter (seuls les livres disponibles sont listés)"/>
+                
+                <Label Grid.Row="2" Grid.Column="0" Content="Date d'emprunt:" Target="{Binding ElementName=dpDateEmprunt}"/>
+                <DatePicker Grid.Row="2" Grid.Column="1" x:Name="dpDateEmprunt"
+                            SelectedDate="{Binding DateEmprunt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="Date à laquelle le livre est emprunté"/>
+
+                <Label Grid.Row="3" Grid.Column="0" Content="Retour Prévu le:" Target="{Binding ElementName=dpDateRetourPrevue}"/>
+                <DatePicker Grid.Row="3" Grid.Column="1" x:Name="dpDateRetourPrevue"
+                            SelectedDate="{Binding DateRetourPrevue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="Date à laquelle le livre doit être retourné"/>
+
+            </Grid>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="Enregistrer Emprunt" Command="{Binding SaveLoanCommand}" IsEnabled="{Binding IsNotBusy}" IsDefault="True" MinWidth="130" Margin="0,0,10,0" Padding="10,5"/>
+            <Button Content="Annuler" Command="{Binding CancelCommand}" IsCancel="True" MinWidth="100" Padding="10,5" IsEnabled="{Binding IsNotBusy}"/>
+        </StackPanel>
+
+        <!-- Optional Loading Overlay -->
+        <Grid Grid.Row="0" Grid.RowSpan="3" Background="#60FFFFFF" Panel.ZIndex="10"
+              Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Border Background="DarkSlateGray" CornerRadius="5" Padding="20" Opacity="0.8"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Opération en cours..." FontSize="14" FontWeight="SemiBold" Foreground="White"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

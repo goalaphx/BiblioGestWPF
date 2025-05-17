@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="BiblioGest.Views.CategoryListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BiblioGest.Views"
+             xmlns:viewmodels="clr-namespace:BiblioGest.ViewModels"
+             xmlns:converters="clr-namespace:BiblioGest.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:CategoryListViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="450" d:DesignWidth="650" Background="WhiteSmoke"> <!-- Adjusted height/width -->
+
+    <UserControl.Resources>
+        <!-- Ensure BooleanToVisibilityConverter and StringToVisibilityConverterIfNotEmpty are in App.xaml -->
+        <!-- <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> -->
+        <!-- <converters:StringToVisibilityConverterIfNotEmpty x:Key="StringToVisibilityConverterIfNotEmpty"/> -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>    <!-- Toolbar -->
+            <RowDefinition Height="Auto"/>    <!-- Search Bar -->
+            <RowDefinition Height="*"/>       <!-- Data Grid -->
+            <RowDefinition Height="Auto"/>    <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Background="#FFE0E0FF" Padding="8" Margin="0,0,0,5" CornerRadius="3" BorderBrush="SlateBlue" BorderThickness="1">
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="_Ajouter" Command="{Binding AddCategoryCommand}" ToolTip="Ajouter une nouvelle catégorie" IsEnabled="{Binding IsNotBusy}"/>
+                <Button Content="_Modifier" Command="{Binding EditCategoryCommand}" ToolTip="Modifier la catégorie sélectionnée" IsEnabled="{Binding IsNotBusy}"/>
+                <Button Content="_Supprimer" Command="{Binding DeleteCategoryCommand}" ToolTip="Supprimer la catégorie sélectionnée" IsEnabled="{Binding IsNotBusy}"/>
+                <Button Content="_Rafraîchir" Command="{Binding LoadCategoriesCommand}" CommandParameter="clear_search" Margin="15,0,0,0" ToolTip="Recharger la liste (efface la recherche)" IsEnabled="{Binding IsNotBusy}"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- Search Bar -->
+        <Grid Grid.Row="1" Margin="0,5,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Rechercher Catégorie:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Target="{Binding ElementName=txtSearchCategories}"/>
+            <TextBox Grid.Column="1" x:Name="txtSearchCategories"
+                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Rechercher par Nom ou Description"
+                     VerticalAlignment="Center" Padding="3" Height="28"
+                     MinWidth="200"/>
+            <Button Grid.Column="2" Content="X" ToolTip="Effacer la recherche" Margin="5,0,0,0" Width="28" Height="28"
+                    Command="{Binding ClearSearchCommand}"
+                    Visibility="{Binding SearchText, Converter={StaticResource StringToVisibilityConverterIfNotEmpty}, FallbackValue=Collapsed}"
+                    IsEnabled="{Binding IsNotBusy}"/>
+        </Grid>
+
+        <!-- Data Grid for Categories -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Categories}"
+                  SelectedItem="{Binding SelectedCategorie, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                  SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                  RowBackground="White" AlternatingRowBackground="#FFF0F0FF"
+                  BorderBrush="LightGray" BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" MinWidth="50"/>
+                <DataGridTextColumn Header="Nom Catégorie" Binding="{Binding Nom}" Width="2*"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="3*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="3" Margin="0,5,0,0">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Categories.Count, StringFormat=' {0} catégorie(s) trouvée(s)'}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ProgressBar Width="100" Height="15" IsIndeterminate="True"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+            </StatusBarItem>
+        </StatusBar>
+        
+        <Grid Grid.Row="0" Grid.RowSpan="4" Background="#60FFFFFF" Panel.ZIndex="10"
+              Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Border Background="DarkSlateGray" CornerRadius="5" Padding="20" Opacity="0.8"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Opération en cours..." FontSize="14" FontWeight="SemiBold" Foreground="White"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,119 @@
+﻿<Application x:Class="BiblioGest.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:BiblioGest.Views"         
+             xmlns:viewmodels="clr-namespace:BiblioGest.ViewModels" 
+             xmlns:converters="clr-namespace:BiblioGest.Converters">
+    <!-- 
+        StartupUri is removed; startup is managed in App.xaml.cs.
+        Namespaces for views, viewmodels, and converters are declared above.
+    -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- *** SECTION TO MERGE MATERIAL DESIGN DICTIONARIES *** -->
+            <!-- Ensure the 'MaterialDesignThemes' NuGet package is installed -->
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Base themes -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <!-- Check this line carefully (line 21 in the error): -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
+                <!-- Color palettes -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Secondary/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- *** END OF MATERIAL DESIGN SECTION *** -->
+
+            <!-- === Global Converters === -->
+            <!-- Defines the BooleanToVisibilityConverter instance for use throughout the app -->
+            <!-- Make sure BooleanToVisibilityConverter.cs exists in the BiblioGest.Converters namespace -->
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:StringToVisibilityConverterIfNotEmpty x:Key="StringToVisibilityConverterIfNotEmpty"/>
+            <converters:ZeroToBrushConverter x:Key="MyZeroToBrushConverter">
+                <converters:ZeroToBrushConverter.ColorIfZero>
+                    <SolidColorBrush Color="ForestGreen"/>
+                </converters:ZeroToBrushConverter.ColorIfZero>
+                <converters:ZeroToBrushConverter.ColorIfNotZero>
+                    <SolidColorBrush Color="OrangeRed"/>
+                </converters:ZeroToBrushConverter.ColorIfNotZero>
+            </converters:ZeroToBrushConverter>            <!-- Add other global converters here if needed -->
+
+
+            <!-- === DataTemplates: ViewModel -> View Mapping === -->
+            <!-- These templates tell WPF which View (UserControl) to instantiate and display -->
+            <!-- when the DataContext (or Content) is set to a specific ViewModel type.     -->
+
+            <!-- Template for Book List -->
+            <DataTemplate DataType="{x:Type viewmodels:BookListViewModel}">
+                <!-- Assumes Views/BookListView.xaml exists and is a UserControl -->
+                <views:BookListView/>
+            </DataTemplate>
+
+            <!-- Template for Book Edit/Add -->
+            <DataTemplate DataType="{x:Type viewmodels:BookEditViewModel}">
+                <!-- Assumes Views/BookEditView.xaml exists and is a UserControl -->
+                <views:BookEditView/>
+            </DataTemplate>
+
+            <!-- Template for Member List -->
+            <DataTemplate DataType="{x:Type viewmodels:MemberListViewModel}">
+                <!-- Assumes Views/MemberListView.xaml exists and is a UserControl -->
+                <views:MemberListView/>
+            </DataTemplate>
+
+            <!-- Template for Member Edit/Add -->
+            <DataTemplate DataType="{x:Type viewmodels:MemberEditViewModel}">
+                <!-- Assumes Views/MemberEditView.xaml exists and is a UserControl -->
+                <views:MemberEditView/>
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type viewmodels:LoanListViewModel}">
+                <views:LoanListView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:LoanNewViewModel}">
+                <views:LoanNewView/>
+            </DataTemplate>
+            <!-- In App.xaml, inside <Application.Resources><ResourceDictionary> -->
+            <DataTemplate DataType="{x:Type viewmodels:CategoryListViewModel}">
+                <views:CategoryListView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:CategoryEditViewModel}">
+                <views:CategoryEditView/>
+            </DataTemplate>
+            <!-- In App.xaml, inside <Application.Resources><ResourceDictionary> -->
+            <DataTemplate DataType="{x:Type viewmodels:DashboardViewModel}">
+                <views:DashboardView/>
+            </DataTemplate>
+            
+
+            <!-- Add DataTemplates for future views/viewmodels here -->
+            <!-- Example:
+             <DataTemplate DataType="{x:Type viewmodels:LoanListViewModel}">
+                 <views:LoanListView/>
+             </DataTemplate>
+             <DataTemplate DataType="{x:Type viewmodels:DashboardViewModel}">
+                 <views:DashboardView/>
+             </DataTemplate>
+             -->
+
+            <!-- === Global Styles (Optional) === -->
+            <!-- You can define application-wide styles for controls here -->
+            <!-- Example: Default style for all Buttons -->
+            <!-- 
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="MinWidth" Value="80"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style> 
+            -->
+            
+            <Style x:Key="RightAlignedCellStyle" TargetType="DataGridCell">
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="Padding" Value="5,2"/>
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

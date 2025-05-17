@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="BiblioGest.Views.LoanListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BiblioGest.Views"
+             xmlns:viewmodels="clr-namespace:BiblioGest.ViewModels"
+             xmlns:converters="clr-namespace:BiblioGest.Converters"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:LoanListViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="550" d:DesignWidth="850" Background="WhiteSmoke"> <!-- Adjusted height/width -->
+
+    <UserControl.Resources>
+        <!-- <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> -->
+        <!-- <converters:StringToVisibilityConverterIfNotEmpty x:Key="StringToVisibilityConverterIfNotEmpty"/> -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>    <!-- Toolbar -->
+            <RowDefinition Height="Auto"/>    <!-- Search Bar -->
+            <RowDefinition Height="*"/>       <!-- Data Grid -->
+            <RowDefinition Height="Auto"/>    <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Background="#FFFFF0E1" Padding="8" Margin="0,0,0,5" CornerRadius="3" BorderBrush="OrangeRed" BorderThickness="1">
+            <WrapPanel Orientation="Horizontal">
+                <Button Content="Nouvel Emprunt" Command="{Binding NewLoanCommand}" ToolTip="Enregistrer un nouvel emprunt" IsEnabled="{Binding IsNotBusy}"/>
+                <Button Content="Retourner Livre" Command="{Binding ReturnBookCommand}" ToolTip="Marquer l'emprunt sélectionné comme retourné" IsEnabled="{Binding IsNotBusy}"/>
+                <Button Content="Rafraîchir" Command="{Binding LoadLoansCommand}" CommandParameter="clear_search" Margin="15,0,0,0" ToolTip="Recharger la liste (efface la recherche)" IsEnabled="{Binding IsNotBusy}"/>
+            </WrapPanel>
+        </Border>
+
+        <!-- Search Bar -->
+        <Grid Grid.Row="1" Margin="0,5,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Rechercher Emprunt:" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Target="{Binding ElementName=txtSearchLoans}"/>
+            <TextBox Grid.Column="1" x:Name="txtSearchLoans"
+                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Rechercher par Titre de Livre, Nom/Prénom d'Adhérent, ou ISBN"
+                     VerticalAlignment="Center" Padding="3" Height="28"
+                     MinWidth="200"/>
+            <Button Grid.Column="2" Content="X" ToolTip="Effacer la recherche" Margin="5,0,0,0" Width="28" Height="28"
+                    Command="{Binding ClearSearchCommand}"
+                    Visibility="{Binding SearchText, Converter={StaticResource StringToVisibilityConverterIfNotEmpty}, FallbackValue=Collapsed}"
+                    IsEnabled="{Binding IsNotBusy}"/>
+        </Grid>
+
+        <!-- Data Grid for Loans -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Loans}"
+                  SelectedItem="{Binding SelectedLoan, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                  SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                  RowBackground="White" AlternatingRowBackground="#FFFFF8F0"
+                  BorderBrush="LightGray" BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID Emprunt" Binding="{Binding Id}" Width="Auto" MinWidth="80" SortMemberPath="Id"/>
+                <DataGridTextColumn Header="Livre (Titre)" Binding="{Binding Livre.Titre}" Width="2.2*" SortMemberPath="Livre.Titre"/>
+                <DataGridTextColumn Header="Adhérent" Binding="{Binding Adherent.NomComplet}" Width="1.5*" SortMemberPath="Adherent.NomComplet"/>
+                <DataGridTextColumn Header="Date Emprunt" Binding="{Binding DateEmprunt, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" Width="Auto" MinWidth="130" SortMemberPath="DateEmprunt"/>
+                <DataGridTextColumn Header="Retour Prévu" Binding="{Binding DateRetourPrevue, StringFormat='{}{0:dd/MM/yyyy}'}" Width="Auto" MinWidth="100" SortMemberPath="DateRetourPrevue"/>
+                <DataGridTextColumn Header="Retour Effectif" Binding="{Binding DateRetourEffective, StringFormat='{}{0:dd/MM/yyyy HH:mm}', TargetNullValue='En cours'}" Width="Auto" MinWidth="130" SortMemberPath="DateRetourEffective"/>
+                <DataGridCheckBoxColumn Header="En Retard?" Binding="{Binding EstEnRetard, Mode=OneWay}" IsReadOnly="True" Width="Auto" MinWidth="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="3" Margin="0,5,0,0">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Loans.Count, StringFormat=' {0} emprunt(s) listé(s)'}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ProgressBar Width="100" Height="15" IsIndeterminate="True"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <Grid Grid.Row="0" Grid.RowSpan="4" Background="#60FFFFFF" Panel.ZIndex="10"
+              Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Border Background="DarkSlateGray" CornerRadius="5" Padding="20" Opacity="0.8"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Opération en cours..." FontSize="14" FontWeight="SemiBold" Foreground="White"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
