@@ -121,5 +121,43 @@ The "Projet Gestion Bibliothèque WPF" is a well-rounded desktop application dem
 
 ---
 
- ### Screenshots:
- 
+<table>
+  <tr>
+    <td align="center">
+      <img src="./img/1.png" alt="Dashboard with Statistics" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/3.png" alt="List of added books" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/4.png" alt="Sorting function for the list" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/5.png" alt="Search function for books by attributes" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/6.png" alt="Modifying a book (Edit)" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/7.png" alt="Deleting a book (Delete)" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/8.png" alt="Member Management" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/9.png" alt="Borrowing Management" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/10.png" alt="Category Management" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/11.png" alt="appsettings.json for DB connection" width="300">
+    </td>
+  </tr>
+</table>
